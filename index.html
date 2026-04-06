@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch 3.0 Block Category Explorer</title>
+    <style>
+        :root {
+            --motion-color: #4C97FF;
+            --looks-color: #9966FF;
+            --sound-color: #D65DB1;
+            --events-color: #FFBF00;
+            --control-color: #FFAB19;
+            --sensing-color: #4CBFE6;
+            --operators-color: #59C059;
+            --variables-color: #FF8C1A;
+            --lists-color: #FF661A;
+            --text-color: #333;
+            --bg-color: #f0f0f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-top: 20px;
+        }
+
+        p.subtitle {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Container for the main interaction */
+        #explorer-container {
+            display: flex;
+            width: 95vw;
+            height: 80vh;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* The clickable image section */
+        #image-pane {
+            flex: 2; /* 66% of the width */
+            position: relative;
+            background-image: url('scratch_blocks_main.png'); /* <--- MAKE SURE THIS FILENAME IS CORRECT */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Define the "invisible button" areas on top of the image */
+        .hotspot {
+            position: absolute;
+            /* border: 1px solid red; */ /* Uncomment for debugging/positioning */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .hotspot:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Coordinates for image hotspots (adjust based on your specific PNG) */
+        /* These are relative percentages based on standard block layouts */
+        #hotspot-motion { top: 0%; left: 0%; width: 10%; height: 100%; border-color: var(--motion-color); }
+        #hotspot-looks  { top: 0%; left: 10%; width: 10%; height: 100%; border-color: var(--looks-color); }
+        #hotspot-sound  { top: 0%; left: 20%; width: 10%; height: 100%; border-color: var(--sound-color); }
+        #hotspot-events { top: 0%; left: 30%; width: 11%; height: 100%; border-color: var(--events-color); }
+        #hotspot-control{ top: 0%; left: 41%; width: 11%; height: 100%; border-color: var(--control-color); }
+        #hotspot-sensing{ top: 0%; left: 52%; width: 12%; height: 100%; border-color: var(--sensing-color); }
+        #hotspot-operators{ top: 0%; left: 64%; width: 12%; height: 100%; border-color: var(--operators-color); }
+        #hotspot-variables{ top: 0%; left: 76%; width: 12%; height: 100%; border-color: var(--variables-color); }
+        #hotspot-lists  { top: 0%; left: 88%; width: 12%; height: 100%; border-color: var(--lists-color); }
+
+        /* The description section */
+        #description-pane {
+            flex: 1; /* 33% of the width */
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+
+        #category-header {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 3px solid transparent;
+        }
+
+        #what-it-does-section, #why-use-it-section {
+            margin-bottom: 20px;
+        }
+
+        #what-it-does-header, #why-use-it-header {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        #explanation-text, #why-use-text {
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        #example-blocks {
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .example-icon {
+            font-size: 1.5em;
+            text-align: center;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Scratch 3.0 Block Category Explorer</h1>
+    <p class="subtitle">Click a column of blocks on the left to learn what they do and why we use them!</p>
+
+    <div id="explorer-container">
+        
+        <div id="image-pane">
+            <div id="hotspot-motion" class="hotspot" data-category="motion"></div>
+            <div id="hotspot-looks" class="hotspot" data-category="looks"></div>
+            <div id="hotspot-sound" class="hotspot" data-category="sound"></div>
+            <div id="hotspot-events" class="hotspot" data-category="events"></div>
+            <div id="hotspot-control" class="hotspot" data-category="control"></div>
+            <div id="hotspot-sensing" class="hotspot" data-category="sensing"></div>
+            <div id="hotspot-operators" class="hotspot" data-category="operators"></div>
+            <div id="hotspot-variables" class="hotspot" data-category="variables"></div>
+            <div id="hotspot-lists" class="hotspot" data-category="lists"></div>
+        </div>
+
+        <div id="description-pane">
+            <div id="category-header">Select a Category</div>
+            
+            <div id="what-it-does-section">
+                <div id="what-it-does-header">What it does:</div>
+                <div id="explanation-text">Hover or click a block column on the image to see details here. This section will explain the *action* the blocks perform in your project.</div>
+            </div>
+
+            <div id="why-use-it-section">
+                <div id="why-use-it-header">Why use it / What for:</div>
+                <div id="why-use-text">This section explains *the purpose*. What kind of game or story logic does this category handle? (e.g., Making a character jump vs. keeping score).</div>
+            </div>
+
+            <div id="example-blocks">
+                <div class="example-icon" title="Moves or Turns">➔ ⟲</div>
+                <div class="example-icon" title="Speech bubbles / Costumes">💬 👕</div>
+                <div class="example-icon" title="Plays Sounds">🎵 🔊</div>
+                <div class="example-icon" title="Starts Scripts (Green Flag)">🏁 ⌨️</div>
+                <div class="example-icon" title="Loops & If/Then Logic">🔁 ❓</div>
+                <div class="example-icon" title="Detects Touch/Color">👉 🎨</div>
+                <div class="example-icon" title="Math & Logic Comparisons">+ &gt; =</div>
+                <div class="example-icon" title="Stores numbers or words">📦 123</div>
+                <div class="example-icon" title="Stores ordered lists of data">🗒️ 1.2.3.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Content Data Object: Defines the explanation text for each category.
+        const categoryData = {
+            motion: {
+                title: "Motion",
+                color: "var(--motion-color)",
+                what: "These blocks control how your sprites **move, turn, Glide,** and change their **position** (X and Y coordinates) on the stage.",
+                why: "Use these when you want characters to jump, walk across the screen, spin, or follow the mouse pointer. It's essential for any game or animated story."
+            },
+            looks: {
+                title: "Looks",
+                color: "var(--looks-color)",
+                what: "Looks blocks change the *appearance* of your sprites. They can make sprites **say** or **think** text, switch **costumes,** change **size,** hide, or apply graphic **effects** (like color changes or pixelate).",
+                why: "Use these for dialogue between characters, making a character walk by switching costumes, or creating visual effect changes when a sprite is hit."
+            },
+            sound: {
+                title: "Sound",
+                color: "var(--sound-color)",
+                what: "These blocks **play** audio files or use built-in musical instruments. You can adjust the **volume** and **pitch** (how high or low the sound is).",
+                why: "Essential for adding feedback, atmosphere, or background music to your games. Make a 'boing' sound when jumping, or play a victory song when the player wins."
+            },
+            events: {
+                title: "Events",
+                color: "var(--events-color)",
+                what: "Event blocks are the **starting points** (hat blocks) for your scripts. They listen for a specific trigger, like the **Green Flag** being clicked, a **key** being pressed, or when the sprite **is clicked.**",
+                why: "Every stack of code needs an event block at the top to know *when* to start running. Without these, your code is just a pile of instructions that never activates."
+            },
+            control: {
+                title: "Control",
+                color: "var(--control-color)",
+                what: "These blocks control *how* your code is executed. They create **loops** (forever, repeat), **conditional logic** (if/then, wait until), and manage **clones** (temporary copies of sprites).",
+                why: "Use these to make things repeat, check if a player has enough points, or manage hundreds of tiny enemy clones. This category handles the structure and main logic of your program."
+            },
+            sensing: {
+                title: "Sensing",
+                color: "var(--sensing-color)",
+                what: "Sensing blocks act like the sprite's five senses. They allow a sprite to detect **touching** another sprite/color, the **mouse position,** a **key press,** or how loud the **microphone** is.",
+                why: "Crucial for collision detection in games (did the player hit a wall?) or creating interactive quizzes that ask the user questions and wait for an answer."
+            },
+            operators: {
+                title: "Operators",
+                color: "var(--operators-color)",
+                what: "These blocks are for **math** (plus, minus, multiply, divide) and **logic** (is greater than, is equal to, combining conditions with AND/OR). They also handle **text manipulation** (join words, find letters).",
+                why: "Use math to calculate scores or player health. Use logical comparisons (like score > 10) inside your IF/THEN control blocks to check if conditions are met."
+            },
+            variables: {
+                title: "Variables",
+                color: "var(--variables-color)",
+                what: "Variables are like **boxes** where you can store and name a single piece of information, usually a **number** or a **word** (text string). You can make the box **global** (usable by all sprites) or **local** (for only one sprite).",
+                why: "Use these to keep track of changing information, like the player's **score,** their remaining **lives,** or the current level number. You create them, name them, and tell the code how to change them (e.g., 'Change score by 1')."
+            },
+            lists: {
+                title: "Lists",
+                color: "var(--lists-color)",
+                what: "Lists are advanced variables that can store a **whole collection of ordered items.** Think of them like a physical list you might write on paper (e.g., 1. apple, 2. banana). You can add items, remove items, or find items by their number.",
+                why: "Use these for things that require multiple entries, like a **high score leaderboard** (storing the top 10 scores) or an **inventory list** in an RPG game."
+            }
+        };
+
+        const hotspots = document.querySelectorAll('.hotspot');
+        const header = document.getElementById('category-header');
+        const explanationText = document.getElementById('explanation-text');
+        const whyUseText = document.getElementById('why-use-text');
+
+        // Function to update the description pane content and styling
+        function displayCategory(catName) {
+            const data = categoryData[catName];
+
+            if (data) {
+                // Update text
+                header.textContent = data.title;
+                explanationText.innerHTML = data.what;
+                whyUseText.innerHTML = data.why;
+                
+                // Update header underline color
+                header.style.borderBottomColor = data.color;
+                
+                // (Optional) Reset any highlight borders on other hotspots
+                hotspots.forEach(h => h.style.borderWidth = '1px');
+            }
+        }
+
+        // Add event listeners to all hotspots
+        hotspots.forEach(hotspot => {
+            // Option A: Click to activate (best for careful explanation)
+            hotspot.addEventListener('click', (e) => {
+                const category = e.target.dataset.category;
+                displayCategory(category);
+            });
+
+            // Option B (alternative): Hover to activate (fast interaction)
+            // hotspot.addEventListener('mouseover', (e) => {
+            //     const category = e.target.dataset.category;
+            //     displayCategory(category);
+            // });
+        });
+
+    }
+    </script>
+</body>
+</html>
